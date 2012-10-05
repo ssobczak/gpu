@@ -5,10 +5,15 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.util.Log;
 
 public class MyGL20Renderer implements GLSurfaceView.Renderer {
 	private Triangle mTriangle;
+	
+    private final float[] mMVPMatrix = new float[16];
+    private final float[] mProjMatrix = new float[16];
+    private final float[] mVMatrix = new float[16];
 	
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		// Set the background frame color
@@ -19,8 +24,20 @@ public class MyGL20Renderer implements GLSurfaceView.Renderer {
 	}
 
 	public void onDrawFrame(GL10 unused) {
-		// Redraw background color
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        // Draw background color
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+
+        
+        Log.i("a", "lol");
+        
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+
+        // Draw triangle
+        mTriangle.draw(mMVPMatrix);
 	}
 
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
